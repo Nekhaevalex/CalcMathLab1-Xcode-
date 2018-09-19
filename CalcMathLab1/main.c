@@ -33,6 +33,33 @@ ftype getMax(ftype* array, int size) {
 	}
 }
 
+ftype sign(ftype a) {
+	if (a > 0) {
+		return 1;
+	} else if (a==0) {
+		return 0;
+	} else {
+		return -1;
+	}
+}
+
+ftype evaluate(ftype *coefs, int length, ftype X) {
+	ftype result = 0;
+	for (int i = 0; i<length; i++) {
+		result+=coefs[i]*pow(X, length-i-1);
+	}
+	return result;
+}
+
+typedef struct {
+	ftype left;
+	ftype right;
+}interval;
+
+void printInterval(interval a) {
+	printf("\t%f<=X<=%f\n",a.left,a.right);
+}
+
 int main()
 {
 	printf("Computational Mathematics Lab #1\nVariant I.1\n(c)2018, Alexander Nekhaev\n\n");
@@ -80,5 +107,42 @@ int main()
 	ftype rightEdge = 1 + (A/fabs(a0));
 	
 	printf ("\nSecond step result(localization):\n\t%f<=|z|<=%f\n", leftEdge, rightEdge);
+	
+	ftype M = 5000;
+	ftype step = (rightEdge-leftEdge)/M;
+	interval intervals[6];
+	int intervalsAmount = 0;
+	int lastSign;
+	ftype coefs[7] = {a0, a1, a2, a3, a4, a5, a6};
+	
+	while (intervalsAmount < 6) {
+		M = M*2;
+		step = (rightEdge-leftEdge)/M;
+		lastSign = sign(evaluate(coefs, 7, -rightEdge));
+		intervalsAmount = 0;
+		for (ftype X = (-1)*rightEdge; X<=(-1)*leftEdge; X+=step) {
+			if (sign(evaluate(coefs, 7, X)) != lastSign) {
+				lastSign = sign(evaluate(coefs, 7, X));
+				intervalsAmount++;
+				intervals[intervalsAmount-1].left = X-step;
+				intervals[intervalsAmount-1].right = X;
+			}
+		}
+		lastSign = sign(evaluate(coefs, 7, leftEdge));
+		for (ftype X = leftEdge; X<=rightEdge; X+=step) {
+			if (sign(evaluate(coefs, 7, X)) != lastSign) {
+				lastSign = sign(evaluate(coefs, 7, X));
+				intervalsAmount++;
+				intervals[intervalsAmount-1].left = X-step;
+				intervals[intervalsAmount-1].right = X;
+			}
+		}
+	}
+	
+	printf("Intervals:\n");
+	for (int i = 0; i<intervalsAmount; i++) {
+		printInterval(intervals[i]);
+	}
+	
 	return 0;
 }
