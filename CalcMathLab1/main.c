@@ -106,7 +106,7 @@ int main()
 	ftype leftEdge = fabs(a6)/(fabs(a6) + B);
 	ftype rightEdge = 1 + (A/fabs(a0));
 	
-	printf ("\nSecond step result(localization):\n\t%f<=|z|<=%f\n", leftEdge, rightEdge);
+	printf ("\nSecond step result(localization):\nRing\n\t%f<=|z|<=%f\n", leftEdge, rightEdge);
 	
 	ftype M = 5000;
 	ftype step = (rightEdge-leftEdge)/M;
