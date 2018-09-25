@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define ftype double
+#define ftype long double
 
 ftype getXY(ftype PN, ftype P0) {
 	return PN / P0;
@@ -57,7 +57,7 @@ typedef struct {
 }interval;
 
 void printInterval(interval a) {
-	printf("\t%f<=X<=%f\n",a.left,a.right);
+	printf("\t%Lf<=X<=%Lf\n",a.left,a.right);
 }
 
 int main()
@@ -75,7 +75,7 @@ int main()
 	ftype U3 = 10.0;
 	ftype P3 = 5.0 * powf(10.0, 5.0);
 	
-	printf("Initial values:\n\tgamma_0=%f\n\trho_0=%f\n\tU_0=%f\n\tP_0=%f\n\n\tgamma_3=%f\n\trho_3=%f\n\tU_3=%f\n\tP_3=%f\n",gamma0, rho0, U0, P0, gamma3, rho3, U3, P3);
+	printf("Initial values:\n\tgamma_0=%Lf\n\trho_0=%Lf\n\tU_0=%Lf\n\tP_0=%Lf\n\n\tgamma_3=%Lf\n\trho_3=%Lf\n\tU_3=%Lf\n\tP_3=%Lf\n",gamma0, rho0, U0, P0, gamma3, rho3, U3, P3);
 	
 	ftype X = getXY(P3, P0);
 	ftype alpha0 = getAlpha(gamma0);
@@ -94,7 +94,7 @@ int main()
 	ftype a5 = -2 * ((-1 + e0)*(alpha0 + 2 * e0)*X + e3 * (-2 + 2 * alpha0*X + e0 * (-2 + (-2 + alpha0)*X)) + alpha3 * (-1 + e3 + e0 * (2 + e3) - powf(e0, 2)) + (2 - alpha0 * X)*powf(e3, 2))*powf(X, 3);
 	ftype a6 = (-2 * e0*(1 + e3) + powf(e0, 2) + powf(-1 + e3, 2))*powf(X, 4);
 	
-	printf("\nFirst step results(coefficients):\n\ta0=%f\n\ta1=%f\n\ta2=%f\n\ta3=%f\n\ta4=%f\n\ta5=%f\n\ta6=%f\n", a0, a1, a2, a3, a4, a5, a6);
+	printf("\nFirst step results(coefficients):\n\ta0=%Lf\n\ta1=%Lf\n\ta2=%Lf\n\ta3=%Lf\n\ta4=%Lf\n\ta5=%Lf\n\ta6=%Lf\n", a0, a1, a2, a3, a4, a5, a6);
 	
 	//Root localization
 	ftype arrayOneToN[6] = {a1, a2, a3, a4, a5, a6};
@@ -103,10 +103,10 @@ int main()
 	ftype A = getMax(arrayOneToN, 6);
 	ftype B = getMax(arrayZeroToNMinOne, 6);
 	
-	ftype leftEdge = fabs(a6)/(fabs(a6) + B);
-	ftype rightEdge = 1 + (A/fabs(a0));
+	ftype leftEdge = fabsl(a6)/(fabsl(a6) + B);
+	ftype rightEdge = 1 + (A/fabsl(a0));
 	
-	printf ("\nSecond step result(localization):\nRing\n\t%f<=|z|<=%f\n", leftEdge, rightEdge);
+	printf ("\nSecond step result(localization):\nRing:\n\t%Lf<=|z|<=%Lf\n", leftEdge, rightEdge);
 	
 	ftype M = 5000;
 	ftype step = (rightEdge-leftEdge)/M;
@@ -144,5 +144,28 @@ int main()
 		printInterval(intervals[i]);
 	}
 	
+	printf("Dichotomy:\nInput epsilon:");
+	ftype epsilon = 0.0;
+	scanf("%Lf", &epsilon);
+	for (int i = 0; i<6; i++) {
+		ftype l = intervals[i].left;
+		ftype r = intervals[i].right;
+		while ((r-l) > epsilon) {
+			ftype middle = (l+r)/2.0;
+			
+			ftype leftValue = evaluate(coefs, 7, l);
+			ftype middleValue = evaluate(coefs, 7, middle);
+			
+			ftype testVal = leftValue*middleValue;
+			
+			if (testVal < 0) {
+				r = middle;
+			} else {
+				l = middle;
+			}
+		}
+		ftype root = (l+r)/2.0;
+		printf("Root number %d x = %Lf\n", i, root);
+	}
 	return 0;
 }
