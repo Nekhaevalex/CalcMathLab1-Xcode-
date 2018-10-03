@@ -65,21 +65,6 @@ static ftype calcD0Minus(ftype P0, ftype U0, ftype gamma0, int i, ftype rho0, ft
 	return D0;
 }
 
-static ftype calcD0Plus(ftype P0, ftype U0, ftype gamma0, int i, ftype rho0, ftype *roots) {
-	ftype D0 = U0 + P0*powf(2,-0.5)*powf(P0*rho0*powf(-1 + roots[i],2)*powf(-1 + gamma0 + (1 + gamma0)*roots[i],-1),-0.5)*(-1 + roots[i]);
-	return D0;
-}
-
-static ftype calcD3(ftype D0, ftype P0, ftype P3, ftype U0, ftype U3, ftype gamma0, int i, ftype rho3, ftype *roots) {
-	ftype D3=powf(rho3,-1)*powf(2*D0*(-1 + roots[i]) + U0*(1 + gamma0 + (-1 + gamma0)*roots[i]) - U3*(-1 + gamma0 + (1 + gamma0)*roots[i]),-1)*(-(P3*(-1 + gamma0 + (1 + gamma0)*roots[i])) + P0*roots[i]*(-1 + gamma0 + (1 + gamma0)*roots[i]) + rho3*U3*(2*D0*(-1 + roots[i]) + U0*(1 + gamma0 + (-1 + gamma0)*roots[i]) - U3*(-1 + gamma0 + (1 + gamma0)*roots[i])));
-	return D3;
-}
-
-static ftype D3Fed(ftype D0P, ftype P0, ftype P3, ftype U0, ftype U3, ftype gamma0, int i, ftype rho3, ftype *roots) {
-	ftype D3F=U3 + powf(rho3,-1)*powf(-2*D0P + U0 + gamma0*U0 + U3 - gamma0*U3 + (2*D0P + (-1 + gamma0)*U0 - (1 + gamma0)*U3)*roots[i],-1)*(-1 + gamma0 + (1 + gamma0)*roots[i])*(-P3 + P0*roots[i]);
-	return D3F;
-}
-
 int main()
 {
 	printf("Computational Mathematics Lab #1\nVariant I.1\n(c)2018, Alexander Nekhaev\n\n");
