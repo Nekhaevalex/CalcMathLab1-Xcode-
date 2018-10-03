@@ -89,7 +89,6 @@ int main()
 	ftype U0 = -1.587 * powf(10.0, 5.0);
 	ftype P0 = 3.7812 * powf(10.0, 6.0);
 	
-	
 	ftype gamma3 = 5.0 / 3;
 	ftype rho3 = 2.71 * powf(10.0, -3.0);
 	ftype U3 = 10.0;
@@ -194,16 +193,34 @@ int main()
 	for (int i = 0; i<6; i++) {
 		if (roots[i] > 0) {
 			printf("Root Y[%d]=%Lf\n",i,roots[i]);
-			ftype D0M = calcD0Minus(P0, U0, gamma0, i, rho0, roots);
-			ftype D0P = calcD0Plus(P0, U0, gamma0, i, rho0, roots);
-			ftype D3M = calcD3(D0M, P0, P3, U0, U3, gamma0, i, rho3, roots);
-			ftype D3P = calcD3(D0P, P0, P3, U0, U3, gamma0, i, rho3, roots);
+			printf("---------------------------\n");
 			
-			ftype D3F = D3Fed(D0P, P0, P3, U0, U3, gamma0, i, rho3, roots);
+			//Author is довен so we need some adapters
+			//Adapter
+			ftype G0 = gamma0;
+			ftype R0 = rho0;
+			//U0 remains the same
+			//P0 remains the same
+			ftype G1 = gamma3;
+			ftype R1 = rho3;
+			ftype U1 = U3;
+			ftype P1 = P3;
 			
-			printf("\tD0=%Lf\t||\tD0=%Lf\n", D0M, D0P);
-			printf("\tD3=%Lf\t||\tD3=%Lf\n", D3M, D3P);
-			printf("\tDF=%Lf\n\n",D3F);
+			ftype Y = roots[i];
+			ftype P3 = Y * P0;
+			ftype P2 = P3;
+			ftype R3 = R0 * (G0 - 1.0 + (G0 + 1.0) * Y) / (G0 + 1.0 + (G0 - 1.0) * Y);
+			ftype U3 = U0 + sqrtl((P3 - P0) * (R3 - R0) / (R3 * R0));
+			ftype R2 = R1 * ((G1 + 1.0) * P2 + (G1 - 1.0) * P1) / ((G1 - 1.0) * P2 + (G1 + 1.0) * P1);
+			ftype U2 = U1 - sqrtl((P2 - P1) * (R2 - R1) / (R2 * R1));
+			ftype D0 = (R3 * U3 - R0 * U0) / (R3 - R0);
+			ftype D1 = (R2 * U2 - R1 * U1) / (R2 - R1);
+			ftype C2 = sqrtl(G1 * P2 / R2);
+			ftype C3 = sqrtl(G0 * P3 / R3);
+			ftype Z0 = (P3 - P0) / fabsl(U3 - U0);
+			ftype Z1 = (P2 - P1) / fabsl(U2 - U1);
+			
+			printf("\tD0=%Lf\t\n\tD3=%Lf\n\n", D0, D1);
 		}
 	}
 	return 0;
