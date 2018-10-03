@@ -60,6 +60,26 @@ void printInterval(interval a) {
 	printf("\t%Lf<=X<=%Lf\n",a.left,a.right);
 }
 
+static ftype calcD0Minus(ftype P0, ftype U0, ftype gamma0, int i, ftype rho0, ftype *roots) {
+	ftype D0 = U0 - P0*powf(2,-0.5)*powf(P0*rho0*powf(-1 + roots[i],2)*powf(-1 + gamma0 + (1 + gamma0)*roots[i],-1),-0.5)*(-1 + roots[i]);
+	return D0;
+}
+
+static ftype calcD0Plus(ftype P0, ftype U0, ftype gamma0, int i, ftype rho0, ftype *roots) {
+	ftype D0 = U0 + P0*powf(2,-0.5)*powf(P0*rho0*powf(-1 + roots[i],2)*powf(-1 + gamma0 + (1 + gamma0)*roots[i],-1),-0.5)*(-1 + roots[i]);
+	return D0;
+}
+
+static ftype calcD3(ftype D0, ftype P0, ftype P3, ftype U0, ftype U3, ftype gamma0, int i, ftype rho3, ftype *roots) {
+	ftype D3=powf(rho3,-1)*powf(2*D0*(-1 + roots[i]) + U0*(1 + gamma0 + (-1 + gamma0)*roots[i]) - U3*(-1 + gamma0 + (1 + gamma0)*roots[i]),-1)*(-(P3*(-1 + gamma0 + (1 + gamma0)*roots[i])) + P0*roots[i]*(-1 + gamma0 + (1 + gamma0)*roots[i]) + rho3*U3*(2*D0*(-1 + roots[i]) + U0*(1 + gamma0 + (-1 + gamma0)*roots[i]) - U3*(-1 + gamma0 + (1 + gamma0)*roots[i])));
+	return D3;
+}
+
+static ftype D3Fed(ftype D0P, ftype P0, ftype P3, ftype U0, ftype U3, ftype gamma0, int i, ftype rho3, ftype *roots) {
+	ftype D3F=U3 + powf(rho3,-1)*powf(-2*D0P + U0 + gamma0*U0 + U3 - gamma0*U3 + (2*D0P + (-1 + gamma0)*U0 - (1 + gamma0)*U3)*roots[i],-1)*(-1 + gamma0 + (1 + gamma0)*roots[i])*(-P3 + P0*roots[i]);
+	return D3F;
+}
+
 int main()
 {
 	printf("Computational Mathematics Lab #1\nVariant I.1\n(c)2018, Alexander Nekhaev\n\n");
@@ -144,8 +164,9 @@ int main()
 		printInterval(intervals[i]);
 	}
 	
-	printf("Dichotomy:\nInput epsilon:");
+	printf("Third step result(clarification):\nDichotomy:\nInput epsilon: ");
 	ftype epsilon = 0.0;
+	ftype roots[6];
 	scanf("%Lf", &epsilon);
 	for (int i = 0; i<6; i++) {
 		ftype l = intervals[i].left;
@@ -165,7 +186,25 @@ int main()
 			}
 		}
 		ftype root = (l+r)/2.0;
+		roots[i] = root;
 		printf("Root number %d x = %Lf\n", i, root);
+	}
+	printf("\nFourth step result(D0 and D3):");
+	printf("\n(We need only positive roots)\n\n");
+	for (int i = 0; i<6; i++) {
+		if (roots[i] > 0) {
+			printf("Root Y[%d]=%Lf\n",i,roots[i]);
+			ftype D0M = calcD0Minus(P0, U0, gamma0, i, rho0, roots);
+			ftype D0P = calcD0Plus(P0, U0, gamma0, i, rho0, roots);
+			ftype D3M = calcD3(D0M, P0, P3, U0, U3, gamma0, i, rho3, roots);
+			ftype D3P = calcD3(D0P, P0, P3, U0, U3, gamma0, i, rho3, roots);
+			
+			ftype D3F = D3Fed(D0P, P0, P3, U0, U3, gamma0, i, rho3, roots);
+			
+			printf("\tD0=%Lf\t||\tD0=%Lf\n", D0M, D0P);
+			printf("\tD3=%Lf\t||\tD3=%Lf\n", D3M, D3P);
+			printf("\tDF=%Lf\n\n",D3F);
+		}
 	}
 	return 0;
 }
