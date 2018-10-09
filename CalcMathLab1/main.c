@@ -205,10 +205,10 @@ int main()
 			ftype Z1 = (P2 - P1) / fabsl(U2 - U1);
 			
 			ftype aCriticalSquare = (P3-P0)/(R3-R0);
-			ftype lambda1 = (U3-D0)/aCriticalSquare;
-			ftype lambda2 = (U0-D0)/aCriticalSquare;
+			ftype lambda1 = (U3-D0)/sqrt(aCriticalSquare);
+			ftype lambda2 = (U0-D0)/sqrt(aCriticalSquare);
 			
-			printf("\tD0=%Lf\t\n\tD3=%Lf\n\nAdditional data\n\n\tA_Critical^2=%Lf\n\tLambda_1=%Le\n\tLambda2=%Le\n\tTest: %Le*%Le=%Lf\n\n", D0, D1, aCriticalSquare, lambda1, lambda2, lambda1, lambda2, lambda1*lambda2);
+			printf("\tD0=%Lf\t\n\tD3=%Lf\n\nAdditional data\n\n\tA_Critical^2=%Lf\n\tLambda_1=%Le\n\tLambda2=%Le\n\tTest: (%Le)*(%Le)=(%Lf)\n\n", D0, D1, aCriticalSquare, lambda1, lambda2, lambda1, lambda2, lambda1*lambda2);
 		}
 	}
 	return 0;
